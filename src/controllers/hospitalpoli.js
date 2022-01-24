@@ -83,7 +83,8 @@ exports.editHospitalPoliData = async (req, res) => {
       where : {
         id: {
          [Op.substring] : id
-        }
+        },
+        deletedStatus : 0
       },
       attributes: {
         exclude: ["createdAt", "updatedAt"]

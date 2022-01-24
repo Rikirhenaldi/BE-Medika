@@ -6,7 +6,7 @@ const Reservations = sequelize.define('reservations', {
   userId: Sequelize.INTEGER,
   codeReservation: Sequelize.STRING,
   doctorName: Sequelize.STRING,
-  polyName: Sequelize.STRING,
+  poliName: Sequelize.STRING,
   typeReservation: {
     type: Sequelize.STRING,
     defaultValue: "Umum",

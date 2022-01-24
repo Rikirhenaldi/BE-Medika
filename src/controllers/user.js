@@ -3,6 +3,7 @@ const response = require('../helpers/response')
 const {Op} = require('sequelize')
 const {APP_UPLOADS_ROUTE, APP_URL} = process.env
 
+
 exports.updateUser = async (req, res) => {
   try{
     const user = await UserModels.findByPk(req.authUser.id)
@@ -18,6 +19,8 @@ exports.updateUser = async (req, res) => {
           email: user.email,
           phone: user.phone,
           bpjs: user.bpjs,
+          noRekamMedis: user.medicalRecordNum,
+          riwayatPenyakit: user.hospitalSheet, 
         }
         return response(res, 200, 'Data user berhasil di perbarui', finaldata)
       }else{
@@ -32,6 +35,8 @@ exports.updateUser = async (req, res) => {
           email: user.email,
           phone: user.phone,
           bpjs: user.bpjs,
+          noRekamMedis: user.medicalRecordNum,
+          riwayatPenyakit: user.hospitalSheet, 
         }
         return response(res, 200, 'Data user berhasil di perbarui', finaldata)
       }
@@ -46,20 +51,13 @@ exports.getDetailUser = async (req, res) => {
       where :{
         id : req.authUser.id,
         deletedStatus : 0
-      }
+      },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "password"]
+      } 
     })
     if(profile){
-      const profileData = {
-        id: profile.id,
-        img: profile.img,
-        nik: profile.nik,
-        name: profile.name,
-        email: profile.email,
-        bpjs: profile.bpjs,
-        phone: profile.phone,
-        deletedStatus: profile.deletedStatus,
-    }
-    return response(res, 200, 'profile lengkap anda', profileData)
+    return response(res, 200, 'profile lengkap anda', profile)
     }else{
       return response(res, 404, 'user tidak ditemukan')
     }
@@ -81,6 +79,8 @@ exports.DeleteUser = async (req, res, err) => {
       email: profile.email,
       bpjs: profile.bpjs,
       phone: profile.phone,
+      noRekamMedis: profile.medicalRecordNum,
+      riwayatPenyakit: profile.hospitalSheet, 
       deletedStatus: profile.deletedStatus,
   }
     return response(res, 200, "akun anda berhasil dihapus", profileData)
@@ -99,22 +99,15 @@ exports.RestoreUser = async (req, res) => {
           }},
           { deletedStatus : 1 }
         ]
+      },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "password"]
       }
     })
     if(profile){
       profile.set(req.body)
       await profile.save()
-      const profileData = {
-        id: profile.id,
-        img: profile.img,
-        nik: profile.nik,
-        name: profile.name,
-        email: profile.email,
-        bpjs: profile.bpjs,
-        phone: profile.phone,
-        deletedStatus: profile.deletedStatus,
-      }
-      return response(res, 200, "akun anda berhasil dipulihkan kembali", profileData)
+      return response(res, 200, "akun anda berhasil dipulihkan kembali", profile)
     }else{
       return response(res, 404, `tidak ditemukan akun terhapus dengan nama ${req.query.name}`)
     }

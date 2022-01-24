@@ -7,8 +7,13 @@ const Users = sequelize.define('users', {
   name: Sequelize.STRING,
   email: Sequelize.STRING,
   password: Sequelize.STRING,
+  address: Sequelize.STRING,
+  hometown: Sequelize.STRING,
+  dateOfBirth: Sequelize.DATEONLY,
   bpjs: Sequelize.STRING,
   phone: Sequelize.STRING,
+  medicalRecordNum: Sequelize.STRING,
+  hospitalSheet: Sequelize.STRING,
   deletedStatus: {
     type: Sequelize.TINYINT,
     defaultValue: 0,

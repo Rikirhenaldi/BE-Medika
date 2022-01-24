@@ -48,12 +48,12 @@ exports.login= async (req, res) => {
     const result = await UserModels.findAll({
       where: {
         email: {
-          [Op.substring] : email
+          [Op.eq]: email
         },
         deletedStatus : 0
       }
     })
-    if(result){
+    if(result.length >= 1){
       const user = result[0]
       const compare = await bcrypt.compare(password, user.password)
       if(compare){
@@ -64,7 +64,7 @@ exports.login= async (req, res) => {
           token: token
         })
       }else{
-        return response(res, 400, 'Login Gagal')
+        return response(res, 400, 'Email atau Password salah')
       }
     }else{
       return response(res, 404, 'Email belum terdaftar')
@@ -75,3 +75,31 @@ exports.login= async (req, res) => {
   }
 }
 
+
+exports.loginByMedicalRecordNum= async (req, res) => {
+  try{
+    const {medicalRecordNum} = req.body
+    const result = await UserModels.findAll({
+      where: {
+        medicalRecordNum: {
+          [Op.eq]: medicalRecordNum
+        },
+        deletedStatus : 0
+      }
+    })
+    if(result){
+        const user = result[0]
+        const token = jwt.sign({id: user.id, medicalRecordNum: user.medicalRecordNum}, process.env.APP_KEY)
+        return res.status(200).json({
+          success: true,
+          message: 'Login Success',
+          token: token
+        })
+    }else{
+      return response(res, 404, 'Nomer rekam medis salah')
+    }
+  }catch(err){
+    console.log(err);
+    return response(res, 400, 'an errors occured', err)
+  }
+}
